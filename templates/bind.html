@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+<!--父模板的继承-->
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/blog.css') }}">
+    <script src="static/js/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#bindbtn").click(function () {
+                var plate = $("#plate").val().replace(/\s+/g, "");
+                x = document.getElementById("message");
+                if (plate == "" || plate.length != 7) {
+                    x.innerHTML = "请填写正确的车牌号码";
+                } else {
+                    var data = {
+                        'plate': plate,
+                    };
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{ url_for("bind") }}',
+                        data: data,
+                        dataType: 'json',
+                        success: function (datax) {
+                            if (datax["result"] == "ok") {
+                                alert("车辆信息绑定成功");
+                            } else {
+                                x.innerHTML = "车辆不存在!";
+                            }
+                        }
+                    })
+                }
+            })
+
+        })
+    </script>
+{% endblock %}
+{% block title %}绑定车牌信息{% endblock %}
+
+{% block main %}
+<!--用于绑定车辆信息.将本人手机号码与车牌进行绑定,前提是这个车辆时里面所有的-->
+<div class="container">
+    <form class="form-signin">
+        <h2 class="form-signin-heading">绑定车辆信息</h2>
+        <p id="message" style="text-align: center;color: #d43f3a"></p>
+        <label for="inputPhone" class="sr-only">plate</label>
+        <input type="text" id="plate" class="form-control" placeholder="请输入车牌号码" required autofocus>
+        <br/>
+        <a class="btn btn-lg btn-primary btn-block" id="bindbtn">立即绑定</a>
+    </form>
+</div> <!-- /container -->
+{% endblock %}

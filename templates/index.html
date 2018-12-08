@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/blog.css') }}">
+{% endblock %}
+{% block title %}
+    首页
+{% endblock %}
+{% block main %}
+    <div class="container">
+    <form class="form-index">
+        <h2 class="form-signin-heading">绑定车辆信息</h2>
+        <p>欢迎使用高速公路无感支付系统</p>
+        <p>该系统目的在于通过高速公路无感支付缓解高速公路收费站点的压力,并通过该系统来完成交通数据的收集</p>
+    </form>
+</div> <!-- /container -->
+{% endblock %}

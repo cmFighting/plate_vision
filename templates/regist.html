@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/blog.css') }}">
+    <script src="static/js/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#codebtn").click(function () {
+                {#alert("咋啦");#}
+                var phone = $("#inputPhone").val().replace(/\s+/g, "");
+                x = document.getElementById("message");  // 找到元素
+                if (phone == "" || phone.length != 11) {
+                    x.innerHTML = "请填写正确的手机号码!";
+                } else {
+                    var data = {
+                        'phone': phone,
+                    };
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("sendcode")}}',
+                        data: data,
+                        dataType: 'json',//希望服务器返回json格式的数据
+                        success: function (data) {
+                            if (data["result"] == "ok") {
+                                x.innerHTML = "验证码已发送,注意查收!"
+                            } else if (data["result"] == "repeat") {
+                                x.innerHTML = "该手机号已注册,请更换手机号!"
+                            } else {
+                                x.innerHTML = "验证码发送失败!"
+                            }
+                            alert(JSON.stringify(data));
+                            alert(data['result'])
+                            alert(data)
+                        }
+                    });
+                }
+            });
+
+            $("#regbtn").click(function () {
+                alert("这个路径");
+                var phone = $("#inputPhone").val().replace(/\s+/g, "");
+                var username = $("#username").val().replace(/\s+/g, "");
+                var password = $("#inputPassword").val().replace(/\s+/g, "");
+                var code = $("#configcode").val().replace(/\s+/g, "");
+                var select = document.getElementById("select").checked;
+                x = document.getElementById("message");  // 找到元素
+                if (phone == "" || phone.length != 11 || username == "" || password == "" || code == "") {
+                    x.innerHTML = "不能为空!";
+                } else if (select != true) {
+                    x.innerHTML = "请接受用户协议!";
+                } else {
+                    var data = {
+                        "phone": phone,
+                        "username": username,
+                        "password": password,
+                        "code": code,
+                    };
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{url_for("regist")}}',
+                        {#contentType:'application/json; charset=UTF-8',指明你要发送的数据形式#}
+                        data: data,
+                        dataType: 'json',//希望服务器返回json格式的数据
+                        success: function (datax) {
+                            if (datax["result"] == "codeerror") {
+                                x.innerHTML = "验证码不一致,请重新输入验证码!"
+                            } else if (datax["result"] == "ok") {
+                                alert("跳转登录页面")
+                                window.location.href ="login";
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block title %}注册{% endblock %}
+
+{% block main %}
+    <div class="container">
+        <form class="form-signin">
+            <h2 class="form-signin-heading">请注册</h2>
+            <p id="message" style="text-align: center;color: #d43f3a"></p>
+            <input type="text" id="username" class="form-control" name="uesrname" placeholder="用户名" required>
+            <br/>
+            <input type="text" name="phone" id="inputPhone" class="form-control" placeholder="手机号码" required
+                   autofocus>
+            <br/>
+            <input type="password" id="inputPassword" class="form-control" name="password" placeholder="密码" required>
+            <br/>
+            <input type="text" id="configcode" class="form-control" placeholder="请输入验证码" required>
+            <a class="btn btn-info form-control" id="codebtn" name="code">发送验证码</a>
+            <br/><br/>
+            <div class="checkbox text-center">
+                <input type="checkbox" id="select" value="recieve" required><a
+                    class="centertext">我接受UniversalFilter服务协议</a>
+            </div>
+            <br/>
+            <a class="btn btn-lg btn-primary btn-block" id="regbtn">注 册</a>
+            {#            <button class="btn btn-lg btn-primary btn-block" id="regbtn" type="submit">注 册</button>#}
+            <br/>
+        </form>
+    </div>
+
+{% endblock %}
+
