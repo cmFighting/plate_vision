@@ -1,9 +1,121 @@
-<h2>本项目是高速公路无感支付系统</h2>
-<p>使用该项目请提前注册github账号,您可以下载到本地,也可以将git --clone指令将该项目克隆到您的本地<p>
-<h2>说明</h2>
-<p>flask项目用于注册用户,登录之后可以绑定您的车牌号码</p> 
-<p>A字母开头的压缩包是核心所在,是整个项目的灵魂,车牌识别通过车牌定位,车牌分割,以及字符识别三部分组成,这里也参考了很多大神的代码.训练通过tensorflow进行完成</p>
-<h3>由于时间仓促,没有及时整理,所以现在看起来有点乱,只是作为大家的一个参考,在这里,要感谢所有的小组成员和我的老师们,他们在整个项目中提供了很多帮助,望不忘初心,继续前进</h3>
-<p>---------------------------------假装这里有分割线-------------------------</p>
-<p>小组成员: 宋晨明, 孟浩然, 李鑫, 朱思华, 刘立影, 杨双铭, 李明洋</p>
-<p>指导老师: 胡矿, 张月芬, 刘东华, 周垚, 康雁等</p>
+# 高速公路无感支付系统
+
+这个一个Python课程实验项目，完整的实现了车牌识别、控制车辆放行、通过Web管理方式管理等功能
+
+涉及到的技术：
+1. `TensorFlow`训练中文省份简称以及数字字母
+2. `Arduino`+超声波距离传感器+摄像头+控制电机
+3. `Flask`后台管理
+
+### 小组成员
+
+宋晨明, 孟浩然, 李鑫, 朱思华, 刘立影, 杨双铭, 李明洋
+
+### 代码结构
+```
+.
+├── lpr                                   # 车牌识别模块
+│   ├── cap_img
+│   ├── capture.py                        # 获取车辆图片?
+│   ├── iot                               # Internet of thing?
+│   ├── process                           # 车牌识别中的字符分割与识别模块
+│   │   ├── characterSegmentation.py
+│   │   ├── images
+│   │   ├── __init__.py
+│   │   ├── licensePlateLocation.py
+│   │   └── __pycache__
+│   ├── sonar_read.py                      # arduino 控制处理程序
+│   ├── test.jpg
+│   ├── test.py                            # 车牌识别的一个简单测试例子
+│   └── train_model                        # 车牌识别中的训练模型模块
+│       ├── cnn_chinese.py
+│       ├── cnn_engLetter.py
+│       ├── cnn_later.py
+│       ├── __init__.py
+│       ├── model
+│       ├── __pycache__
+│       ├── readmodel.py
+│       └── train
+├── readme.md
+└── web                                    # web管理模块
+    ├── aliyunsdkdysmsapi                  # 阿里云短信API的SDK
+    │   ├── __init__.py
+    │   └── request
+    ├── config.py                          # flask应用的相关配置，例如数据库信息
+    ├── decorate.py
+    ├── example                            # 阿里云短信API的简易封装，方便在程序中调用
+    │   └── demo_sms_send.py
+    ├── exts.py
+    ├── manage.py
+    ├── migrations
+    │   ├── alembic.ini
+    │   ├── env.py
+    │   ├── README
+    │   ├── script.py.mako
+    │   └── versions
+    ├── models.py
+    ├── plate_app.py                       # flask主程序文件
+    ├── requirements.txt
+    ├── static
+    │   ├── css
+    │   ├── images
+    │   └── js
+    ├── templates
+    │   ├── base.html
+    │   ├── bind.html
+    │   ├── index.html
+    │   ├── login.html
+    │   ├── my_info.html
+    │   └── regist.html
+    └── untils.py
+```
+
+### 如何运行
+
+##### 下载代码
+
+* git clone https://github.com/cmFighting/plate_vision
+* cd plate_vision
+
+##### 运行web端
+
+1. cd web
+2. pip install -r requirements.txt # flask 相关依赖库
+3. python plate_app.py
+
+##### 训练模型
+
+1. cd lpr
+2. pip install -r requirements.txt # 安装tensorflow、numpy、opencv 相关依赖库
+3. cd lpr/train_model
+4. python cnn_chinese.py
+5. python cnn_engLetter.py
+6. python cnn_later.py
+
+##### 运行车牌识别测试程序
+
+1. cd lpr
+3. python test.py
+
+### 计划任务
+
+- [x] 整理代码结构
+- [ ] 完善相关文档资料
+- [ ] 优化代码结构
+
+### 参考学习链接
+
+1. [tensorflow](https://www.tensorflow.org/)
+2. [numpy](http://www.numpy.org/)
+3. [arduino](https://www.arduino.cc/)
+4. [face-recognition-with-python](https://realpython.com/face-recognition-with-python/)
+5. [flask-sqlalchemy](http://flask-sqlalchemy.pocoo.org/2.3/quickstart/)
+6. [flask](http://flask.pocoo.org/)
+
+### 运行截图
+
+**敬请期待**
+
+### License
+
+MIT
