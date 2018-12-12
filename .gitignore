@@ -1,0 +1,3 @@
+# ignore the configuration file of ide
+.vscode
+.idea
