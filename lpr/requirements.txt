@@ -1,0 +1,4 @@
+tensorflow
+numpy
+# https://pypi.org/project/opencv-python/
+opencv-contrib-python
