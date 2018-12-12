@@ -15,13 +15,16 @@
 ```
 .
 ├── lpr                                   # 车牌识别模块
-│   ├── crop.jpg
+│   ├── cap_img
+│   ├── capture.py                        # 获取车辆图片?
+│   ├── iot                               # Internet of thing?
 │   ├── process                           # 车牌识别中的字符分割与识别模块
 │   │   ├── characterSegmentation.py
 │   │   ├── images
 │   │   ├── __init__.py
 │   │   ├── licensePlateLocation.py
 │   │   └── __pycache__
+│   ├── sonar_read.py                      # arduino 控制处理程序
 │   ├── test.jpg
 │   ├── test.py                            # 车牌识别的一个简单测试例子
 │   └── train_model                        # 车牌识别中的训练模型模块

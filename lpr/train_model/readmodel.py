@@ -82,5 +82,5 @@ def getResult(cjs):
     #     #print('the predict is %s' % later[(np.argmax(output))])
     # sess3.close()
 
-    print('done')
+    # print('done')
     return results

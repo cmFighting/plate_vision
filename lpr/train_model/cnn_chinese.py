@@ -49,41 +49,28 @@ for name_index in range(0, len(labels)):
     dir = 'train/charsChinese/charsChinese/'+labels[name_index]
     for rt, dirs, files in os.walk(dir):
         for filename in files:
-            #print(filename)
             img = cv2.imread('train/charsChinese/charsChinese/'+labels[name_index]+'/'+filename, cv2.IMREAD_GRAYSCALE)
-            #cv2.imshow('test', img)
-            #cv2.waitKey(0)
-            #ret, image_binary = cv2.threshold(img, 230, 255, cv2.THRESH_BINARY)
             image = np.reshape(img, [-1, 400])
-            #这边输入的值是0和255,其中255表示白色,0表示黑色
-            #print(image)
             input_images[index] = image
-            #每个对应有10个值,将符合要求的那个值设置为1
             input_labels[index][name_index] = 1
             index += 1
 x = tf.placeholder(tf.float32, [None, 400], name='Mul')  # 图像输入向量
 y_ = tf.placeholder("float", [None, 31])  # 实际分布
 
 
-# 第一层卷积由一个卷积接一个max pooling完成。
-# 卷积在每个5x5的patch中算出32个特征。卷积的权重张量是[5, 5, 1, 32]，
-# 前两个维度是patch的大小（5x5），接着是输入的通道数目（1），最后是输出的通道数目（32）。
 W_conv1 = weight_variable([5, 5, 1, 32])
 
-# 对于每一个输出通道都有一个对应的偏置量。故为32。
+
 b_conv1 = bias_variable([32])
 
 
-# 为了用这一层，我们把x变成一个4d向量，其第2、第3维对应图片的宽、高，
-# 最后一维代表图片的颜色通道数(因为是灰度图所以这里的通道数为1，如果是rgb彩色图，则为3)。
 x_image = tf.reshape(x, [-1, 20, 20, 1])
 
-# 把x_image和权值向量进行卷积，加上偏置项，然后应用ReLU激活函数，最后进行max pooling。
+
 h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)
 h_pool1 = max_pool_2x2(h_conv1)
 
-# 第二层卷积，把几个类似的层堆叠起来，构建一个更深的网络。
-# 第二层中，每个5x5的patch会得到64个特征。
+
 W_conv2 = weight_variable([5, 5, 32, 64])
 b_conv2 = bias_variable([64])
 
@@ -91,40 +78,32 @@ h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 h_pool2 = max_pool_2x2(h_conv2)
 
 
-# 密集连接层
-# 图片尺寸减小到7x7，加入一个有1024个神经元的全连接层，用于处理整个图片。
-# 我们把池化层输出的张量reshape成一些向量，乘上权重矩阵，加上偏置，然后对其使用ReLU。
 W_fc1 = weight_variable([5 * 5 * 64, 1024])
 b_fc1 = bias_variable([1024])
 
-# 这边的道理是一样的,是让他们转化为对应维数的张量,-1表示的是缺省值
+
 h_pool2_flat = tf.reshape(h_pool2, [-1, 5 * 5 * 64])
-# 这边利用relu作为激活函数
 h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
-# Dropout为了减少过拟合而加入。
-# 用一个placeholder来代表一个神经元的输出在dropout中保持不变的概率。
+
 keep_prob = tf.placeholder("float")
 h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
 
-# 输出层
+
 W_fc2 = weight_variable([1024, 31])
 b_fc2 = bias_variable([31])
 
-# 最后以softmax将他们对应到概率上,下面就是训练和评估模型了
+
 y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
-y_conv2=tf.nn.softmax(tf.matmul(h_fc1, W_fc2) + b_fc2,name="final_result")
+y_conv2=tf.nn.softmax(tf.matmul(h_fc1, W_fc2) + b_fc2, name="final_result")
 
 
-# 训练和评估模型
-#cross_entropy = -tf.reduce_sum(y_ * tf.log(y_conv + 1e-10))
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y_conv))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
 
-# 启动session准备进行
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.Session(config=config)
@@ -151,7 +130,6 @@ for it in range(iterations):
     # 每完成50次迭代，判断准确度是否已达到100%，达到则退出迭代循环
     iterate_accuracy = 0
     if it % 50 == 0:
-        # 需要注意的是,这里的测试数据用的仅仅是原来的数据,所以其实准确率没有那么高
         iterate_accuracy = accuracy.eval(session=sess, feed_dict={x: input_images, y_: input_labels, keep_prob: 1.0})
         print('第 %d 次训练迭代: 准确率 %0.5f%%' % (it, iterate_accuracy * 100))
         if it >= iterations:
@@ -160,11 +138,9 @@ for it in range(iterations):
 
 # 将当前图设置为默认图
 graph_def = tf.get_default_graph().as_graph_def()
-# 将上面的变量转化成常量，保存模型为pb模型时需要,注意这里的final_result和前面的y_con2是同名，只有这样才会保存它，否则会报错，
-# 如果需要保存其他tensor只需要让tensor的名字和这里保持一直即可
 output_graph_def = tf.graph_util.convert_variables_to_constants(sess, graph_def, ['final_result'])
 saver = tf.train.Saver()
-saver.save(sess, "model/chinese/")  # 将预训练的模型保存在当前目录下的这个文件夹中
+saver.save(sess, "model/chinese/test")
 sess.close()
 print('中文字符训练结束')
 

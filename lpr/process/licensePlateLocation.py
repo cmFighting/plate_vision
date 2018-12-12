@@ -13,7 +13,7 @@ higher_blue = np.array([140, 255, 255])
 def findPlateNumberRegion(img):
     region = []
     contours_img, contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    print("contours lenth is :%s" % (len(contours)))
+    # print("contours lenth is :%s" % (len(contours)))
     list_rate = []
     for i in range(len(contours)):
         cnt = contours[i]
@@ -26,7 +26,7 @@ def findPlateNumberRegion(img):
         width = abs(box[0][0] - box[2][0])
         ratio = float(width) / float(height)
         rate = getxyRate(cnt)
-        print("area", area, "ratio:", ratio, "rate:", rate)
+        # print("area", area, "ratio:", ratio, "rate:", rate)
         if ratio > maxPlateRatio or ratio < minPlateRatio:
             continue
         region.append(box)
@@ -89,6 +89,8 @@ def location(filename):
     # 目前下面这步需要进行确定, 可能是直接切割, 也可能是在灰度图像或者是二值图像上进行切割
     # 利用坐标信息直接进行提取
     region = findPlateNumberRegion(closed)
+    rect = cv2.minAreaRect(region)
+    box = cv2.boxPoints(rect)
     Xs = [i[0] for i in region]
     Ys = [i[1] for i in region]
     x1 = min(Xs)
@@ -100,13 +102,17 @@ def location(filename):
     crop_img = img[y1:y1 + hight, x1:x1 + width]
     # cv2.imshow('crop_img_1', crop_img)
     # cv2.imwrite('crop_1.jpg', crop_img)
-    #cv2.drawContours(img, [region], 0, (0, 255, 0), 2)
-    # cv2.imshow("img", img)
+    imgx = img.copy()
+    cv2.drawContours(imgx, [region], 0, (0, 255, 0), 2)
+    # cv2.imshow("real", imgx)
+    # cv2.waitKey(0)
+    # cv2.imshow("real2", crop_img)
+    # cv2.waitKey(0)
     return crop_img
 
 
 if __name__ == '__main__':
-    file = "test.jpg"
+    file = "D:/coding/codeOfPy/Antetokounmpo/timg/new.jpg"
     location(file)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

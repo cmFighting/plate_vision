@@ -125,12 +125,18 @@ def split(plate):
                 cj = img_thre[start_1:end_1, start-bais+2:end+bais-2]
                 cj = cv2.resize(cj, (20, 20), interpolation=cv2.INTER_CUBIC)
                 cjs.append(cj)
+    cm = 0
+    for cj in cjs:
+        cv2.imshow(str(cm), cj)
+        cm = cm+1
+    cv2.waitKey(0)
 
     return cjs
 
 
 if __name__ == '__main__':
-    cjs = split(filename='crop.jpg')
+    plate = cv2.imread('D:/coding/codeOfPy/Antetokounmpo/timg/timg (9).jpg')
+    cjs = split(filename='D:/coding/codeOfPy/Antetokounmpo/timg/timg (9).jpg')
     i = 0
     for cj in cjs:
         cv2.imshow(str(i), cj)
