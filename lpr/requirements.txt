@@ -2,3 +2,9 @@ tensorflow
 numpy
 # https://pypi.org/project/opencv-python/
 opencv-contrib-python
+# https://github.com/skorokithakis/shortuuid
+shortuuid
+# https://github.com/MrYsLab/PyMata
+PyMata
+# https://github.com/MrYsLab/pymata-aio/wiki/Installation
+pymata-aio
